@@ -3,20 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Manipulation</title>
+    <title>PicGrid</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            background-color: #f0f4ff;
+            overflow-y: auto;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            box-sizing: border-box;
+            margin: 20px;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5em;
+            color: #6a1b9a;  /* Purple color */
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        label {
+            font-weight: 600;
+            display: block;
+            margin-top: 10px;
+            color: #333;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .input-group label {
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+        .input-group input, .input-group select {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #f9fbfc;
+            min-width: 100px;
+        }
+        input, select, button, canvas, a {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 14px;
+            background-color: #6a1b9a;  /* Purple color */
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+        button:hover {
+            background-color: #4a0072;  /* Darker purple color */
+        }
+        canvas {
+            border: 1px solid #ddd;
+            margin-top: 20px;
+            max-width: 100%;
+        }
+        a {
+            text-align: center;
+            text-decoration: none;
+            padding: 14px;
+            background-color: #6a1b9a;  /* Purple color */
+            color: white;
+            border-radius: 6px;
+            margin-top: 20px;
+            display: block;
+            font-weight: 600;
+        }
+        a:hover {
+            background-color: #4a0072;  /* Darker purple color */
+        }
+        .image-preview {
+            max-width: 100px;
+            max-height: 100px;
+            display: none;
+            margin: 10px auto;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .button-group button {
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-    <h1>Image Manipulation</h1>
-    <input type="file" id="imageInput" accept="image/*"><br>
-    <label for="copies">Number of copies:</label>
-    <input type="number" id="copies" min="1" value="1"><br>
-    <label for="width">Width (inches):</label>
-    <input type="number" id="width" min="1" value="1"><br>
-    <label for="height">Height (inches):</label>
-    <input type="number" id="height" min="1" value="1"><br>
-    <button onclick="generateImage()">Generate Image</button><br>
-    <canvas id="canvas"></canvas><br>
-    <a id="downloadLink" download="output.png">Download Image</a>
+    <div class="container">
+        <div class="logo">PicGrid</div>
+        <label for="imageInput">Select an image:</label>
+        <input type="file" id="imageInput" accept="image/*" onchange="previewImage()">
+        <img id="imagePreview" class="image-preview" src="" alt="Image Preview">
+        <div class="input-group">
+            <label for="width">Width:</label>
+            <input type="number" id="width" min="1" value="12">
+            <label for="height">Height:</label>
+            <input type="number" id="height" min="1" value="18">
+            <label for="unit">Unit:</label>
+            <select id="unit">
+                <option value="inches" selected>Inches</option>
+                <option value="cm">Centimeters</option>
+                <option value="pixels">Pixels</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="copies">Copies:</label>
+            <input type="number" id="copies" min="1" value="4">
+            <label for="gap">Gap (pixels):</label>
+            <input type="number" id="gap" min="0" value="0">
+            <label for="dpi">Resolution (DPI):</label>
+            <input type="number" id="dpi" min="72" value="300">
+        </div>
+        <div class="button-group">
+            <button onclick="generateImage()">Generate Image</button>
+            <button onclick="resetForm()">Reset</button>
+        </div>
+        <canvas id="canvas"></canvas>
+        <a id="downloadLink" download="output.png">Download Image</a>
+    </div>
 
     <script src="script.js"></script>
 </body>

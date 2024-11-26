@@ -1,8 +1,25 @@
+function previewImage() {
+  const imageInput = document.getElementById("imageInput").files[0];
+  const imagePreview = document.getElementById("imagePreview");
+
+  if (imageInput) {
+    const url = URL.createObjectURL(imageInput);
+    imagePreview.src = url;
+    imagePreview.style.display = "block";
+  } else {
+    imagePreview.src = "";
+    imagePreview.style.display = "none";
+  }
+}
+
 function generateImage() {
   const imageInput = document.getElementById("imageInput").files[0];
   const copies = parseInt(document.getElementById("copies").value);
-  const widthInches = parseFloat(document.getElementById("width").value);
-  const heightInches = parseFloat(document.getElementById("height").value);
+  const width = parseFloat(document.getElementById("width").value);
+  const height = parseFloat(document.getElementById("height").value);
+  const unit = document.getElementById("unit").value;
+  const gap = parseInt(document.getElementById("gap").value);
+  const dpi = parseInt(document.getElementById("dpi").value);
 
   if (!imageInput) {
     alert("Please select an image.");
@@ -14,25 +31,62 @@ function generateImage() {
   const img = new Image();
   const url = URL.createObjectURL(imageInput);
 
+  // Convert width and height to pixels
+  let canvasWidth, canvasHeight;
+  if (unit === "inches") {
+    canvasWidth = width * dpi;
+    canvasHeight = height * dpi;
+  } else if (unit === "cm") {
+    canvasWidth = (width * dpi) / 2.54;
+    canvasHeight = (height * dpi) / 2.54;
+  } else {
+    canvasWidth = width;
+    canvasHeight = height;
+  }
+
   img.onload = function () {
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+
     const aspectRatio = img.width / img.height;
-    const width = widthInches * 96; // Convert to pixels
-    const height = heightInches * 96; // Convert to pixels
-    const scaledWidth = width / Math.ceil(width / img.width);
-    const scaledHeight = scaledWidth / aspectRatio;
+    const cols = Math.ceil(Math.sqrt(copies));
+    const rows = Math.ceil(copies / cols);
 
-    canvas.width = width;
-    canvas.height = height;
+    const maxImageWidth = (canvasWidth - (cols - 1) * gap) / cols;
+    const maxImageHeight = (canvasHeight - (rows - 1) * gap) / rows;
 
-    for (let y = 0; y < Math.ceil(height / scaledHeight); y++) {
-      for (let x = 0; x < Math.ceil(width / scaledWidth); x++) {
-        ctx.drawImage(
-          img,
-          x * scaledWidth,
-          y * scaledHeight,
-          scaledWidth,
-          scaledHeight
-        );
+    let scaledWidth, scaledHeight;
+
+    if (aspectRatio > 1) {
+      scaledWidth = maxImageWidth;
+      scaledHeight = maxImageWidth / aspectRatio;
+      if (scaledHeight > maxImageHeight) {
+        scaledHeight = maxImageHeight;
+        scaledWidth = scaledHeight * aspectRatio;
+      }
+    } else {
+      scaledHeight = maxImageHeight;
+      scaledWidth = maxImageHeight * aspectRatio;
+      if (scaledWidth > maxImageWidth) {
+        scaledWidth = maxImageWidth;
+        scaledHeight = scaledWidth / aspectRatio;
+      }
+    }
+
+    let count = 0;
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        if (count < copies) {
+          const offsetX = x * (scaledWidth + gap);
+          const offsetY = y * (scaledHeight + gap);
+          if (
+            offsetX + scaledWidth <= canvasWidth &&
+            offsetY + scaledHeight <= canvasHeight
+          ) {
+            ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight);
+            count++;
+          }
+        }
       }
     }
 
@@ -43,4 +97,18 @@ function generateImage() {
   };
 
   img.src = url;
+}
+
+function resetForm() {
+  document.getElementById("imageInput").value = "";
+  document.getElementById("imagePreview").style.display = "none";
+  document.getElementById("copies").value = "4";
+  document.getElementById("width").value = "12";
+  document.getElementById("height").value = "18";
+  document.getElementById("unit").value = "inches";
+  document.getElementById("gap").value = "0";
+  document.getElementById("dpi").value = "300";
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
