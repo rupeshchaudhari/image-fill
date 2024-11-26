@@ -98,3 +98,17 @@ function generateImage() {
 
   img.src = url;
 }
+
+function resetForm() {
+  document.getElementById("imageInput").value = "";
+  document.getElementById("imagePreview").style.display = "none";
+  document.getElementById("copies").value = "4";
+  document.getElementById("width").value = "12";
+  document.getElementById("height").value = "18";
+  document.getElementById("unit").value = "inches";
+  document.getElementById("gap").value = "0";
+  document.getElementById("dpi").value = "300";
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}

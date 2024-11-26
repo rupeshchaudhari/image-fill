@@ -93,6 +93,13 @@
             margin: 10px auto;
             border: 1px solid #d3d3d3;
         }
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+        }
+        .button-group button {
+            width: 48%;
+        }
     </style>
 </head>
 <body>
@@ -101,15 +108,15 @@
         <input type="file" id="imageInput" accept="image/*" onchange="previewImage()">
         <img id="imagePreview" class="image-preview" src="" alt="Image Preview">
         <label for="copies">Number of copies:</label>
-        <input type="number" id="copies" min="1" value="1">
+        <input type="number" id="copies" min="1" value="4">
         <div class="input-group">
             <label for="width">Width:</label>
-            <input type="number" id="width" min="1" value="1">
+            <input type="number" id="width" min="1" value="12">
             <label for="height">Height:</label>
-            <input type="number" id="height" min="1" value="1">
+            <input type="number" id="height" min="1" value="18">
             <label for="unit">Unit:</label>
             <select id="unit">
-                <option value="inches">Inches</option>
+                <option value="inches" selected>Inches</option>
                 <option value="cm">Centimeters</option>
                 <option value="pixels">Pixels</option>
             </select>
@@ -118,7 +125,10 @@
         <input type="number" id="gap" min="0" value="0">
         <label for="dpi">Resolution (DPI):</label>
         <input type="number" id="dpi" min="72" value="300">
-        <button onclick="generateImage()">Generate Image</button>
+        <div class="button-group">
+            <button onclick="generateImage()">Generate Image</button>
+            <button onclick="resetForm()">Reset</button>
+        </div>
         <canvas id="canvas"></canvas>
         <a id="downloadLink" download="output.png">Download Image</a>
     </div>
