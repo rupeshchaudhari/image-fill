@@ -3,6 +3,7 @@ function generateImage() {
   const copies = parseInt(document.getElementById("copies").value);
   const widthInches = parseFloat(document.getElementById("width").value);
   const heightInches = parseFloat(document.getElementById("height").value);
+  const gap = parseInt(document.getElementById("gap").value);
 
   if (!imageInput) {
     alert("Please select an image.");
@@ -22,27 +23,44 @@ function generateImage() {
 
     const aspectRatio = img.width / img.height;
 
-    // Calculate appropriate dimensions to maintain aspect ratio
-    let scaledWidth = canvasWidth / Math.ceil(Math.sqrt(copies));
-    let scaledHeight = scaledWidth / aspectRatio;
+    // Calculate the maximum size for the images to fit within the canvas with the specified gap
+    const cols = Math.ceil(Math.sqrt(copies));
+    const rows = Math.ceil(copies / cols);
 
-    if (scaledHeight * Math.ceil(Math.sqrt(copies)) > canvasHeight) {
-      scaledHeight = canvasHeight / Math.ceil(Math.sqrt(copies));
-      scaledWidth = scaledHeight * aspectRatio;
+    const maxImageWidth = (canvasWidth - (cols - 1) * gap) / cols;
+    const maxImageHeight = (canvasHeight - (rows - 1) * gap) / rows;
+
+    let scaledWidth, scaledHeight;
+
+    if (aspectRatio > 1) {
+      scaledWidth = maxImageWidth;
+      scaledHeight = maxImageWidth / aspectRatio;
+      if (scaledHeight > maxImageHeight) {
+        scaledHeight = maxImageHeight;
+        scaledWidth = scaledHeight * aspectRatio;
+      }
+    } else {
+      scaledHeight = maxImageHeight;
+      scaledWidth = maxImageHeight * aspectRatio;
+      if (scaledWidth > maxImageWidth) {
+        scaledWidth = maxImageWidth;
+        scaledHeight = scaledWidth / aspectRatio;
+      }
     }
 
     let count = 0;
-    for (let y = 0; y < Math.ceil(canvasHeight / scaledHeight); y++) {
-      for (let x = 0; x < Math.ceil(canvasWidth / scaledWidth); x++) {
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
         if (count < copies) {
-          ctx.drawImage(
-            img,
-            x * scaledWidth,
-            y * scaledHeight,
-            scaledWidth,
-            scaledHeight
-          );
-          count++;
+          const offsetX = x * (scaledWidth + gap);
+          const offsetY = y * (scaledHeight + gap);
+          if (
+            offsetX + scaledWidth <= canvasWidth &&
+            offsetY + scaledHeight <= canvasHeight
+          ) {
+            ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight);
+            count++;
+          }
         }
       }
     }
