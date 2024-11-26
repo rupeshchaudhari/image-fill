@@ -1,9 +1,25 @@
+function previewImage() {
+  const imageInput = document.getElementById("imageInput").files[0];
+  const imagePreview = document.getElementById("imagePreview");
+
+  if (imageInput) {
+    const url = URL.createObjectURL(imageInput);
+    imagePreview.src = url;
+    imagePreview.style.display = "block";
+  } else {
+    imagePreview.src = "";
+    imagePreview.style.display = "none";
+  }
+}
+
 function generateImage() {
   const imageInput = document.getElementById("imageInput").files[0];
   const copies = parseInt(document.getElementById("copies").value);
-  const widthInches = parseFloat(document.getElementById("width").value);
-  const heightInches = parseFloat(document.getElementById("height").value);
+  const width = parseFloat(document.getElementById("width").value);
+  const height = parseFloat(document.getElementById("height").value);
+  const unit = document.getElementById("unit").value;
   const gap = parseInt(document.getElementById("gap").value);
+  const dpi = parseInt(document.getElementById("dpi").value);
 
   if (!imageInput) {
     alert("Please select an image.");
@@ -15,9 +31,20 @@ function generateImage() {
   const img = new Image();
   const url = URL.createObjectURL(imageInput);
 
+  // Convert width and height to pixels
+  let canvasWidth, canvasHeight;
+  if (unit === "inches") {
+    canvasWidth = width * dpi;
+    canvasHeight = height * dpi;
+  } else if (unit === "cm") {
+    canvasWidth = (width * dpi) / 2.54;
+    canvasHeight = (height * dpi) / 2.54;
+  } else {
+    canvasWidth = width;
+    canvasHeight = height;
+  }
+
   img.onload = function () {
-    const canvasWidth = widthInches * 96; // Convert to pixels
-    const canvasHeight = heightInches * 96; // Convert to pixels
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
 
