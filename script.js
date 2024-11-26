@@ -14,15 +14,21 @@ function previewImage() {
 
 function generateImage() {
   const imageInput = document.getElementById("imageInput").files[0];
-  const copies = parseInt(document.getElementById("copies").value);
+  const rows = parseInt(document.getElementById("rows").value);
+  const columns = parseInt(document.getElementById("columns").value);
   const width = parseFloat(document.getElementById("width").value);
   const height = parseFloat(document.getElementById("height").value);
   const unit = document.getElementById("unit").value;
-  const gap = parseInt(document.getElementById("gap").value);
   const dpi = parseInt(document.getElementById("dpi").value);
+  const orientation = document.getElementById("orientation").value;
 
   if (!imageInput) {
     alert("Please select an image.");
+    return;
+  }
+
+  if (!rows || !columns || !width || !height || !unit || !dpi) {
+    alert("Please fill in all fields.");
     return;
   }
 
@@ -48,45 +54,56 @@ function generateImage() {
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
 
-    const aspectRatio = img.width / img.height;
-    const cols = Math.ceil(Math.sqrt(copies));
-    const rows = Math.ceil(copies / cols);
+    const cellWidth = canvasWidth / columns;
+    const cellHeight = canvasHeight / rows;
 
-    const maxImageWidth = (canvasWidth - (cols - 1) * gap) / cols;
-    const maxImageHeight = (canvasHeight - (rows - 1) * gap) / rows;
+    let imgWidth = img.width;
+    let imgHeight = img.height;
 
+    // Adjust dimensions if orientation is portrait
+    if (orientation === "portrait") {
+      [imgWidth, imgHeight] = [imgHeight, imgWidth];
+    }
+
+    const aspectRatio = imgWidth / imgHeight;
     let scaledWidth, scaledHeight;
 
     if (aspectRatio > 1) {
-      scaledWidth = maxImageWidth;
-      scaledHeight = maxImageWidth / aspectRatio;
-      if (scaledHeight > maxImageHeight) {
-        scaledHeight = maxImageHeight;
+      scaledWidth = cellWidth;
+      scaledHeight = cellWidth / aspectRatio;
+      if (scaledHeight > cellHeight) {
+        scaledHeight = cellHeight;
         scaledWidth = scaledHeight * aspectRatio;
       }
     } else {
-      scaledHeight = maxImageHeight;
-      scaledWidth = maxImageHeight * aspectRatio;
-      if (scaledWidth > maxImageWidth) {
-        scaledWidth = maxImageWidth;
+      scaledHeight = cellHeight;
+      scaledWidth = cellHeight * aspectRatio;
+      if (scaledWidth > cellWidth) {
+        scaledWidth = cellWidth;
         scaledHeight = scaledWidth / aspectRatio;
       }
     }
 
-    let count = 0;
-    for (let y = 0; y < rows; y++) {
-      for (let x = 0; x < cols; x++) {
-        if (count < copies) {
-          const offsetX = x * (scaledWidth + gap);
-          const offsetY = y * (scaledHeight + gap);
-          if (
-            offsetX + scaledWidth <= canvasWidth &&
-            offsetY + scaledHeight <= canvasHeight
-          ) {
-            ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight);
-            count++;
-          }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < columns; col++) {
+        const offsetX = col * cellWidth + (cellWidth - scaledWidth) / 2;
+        const offsetY = row * cellHeight + (cellHeight - scaledHeight) / 2;
+        ctx.save();
+        if (orientation === "portrait") {
+          ctx.translate(offsetX + scaledWidth / 2, offsetY + scaledHeight / 2);
+          ctx.rotate((90 * Math.PI) / 180);
+          ctx.drawImage(
+            img,
+            -scaledHeight / 2,
+            -scaledWidth / 2,
+            scaledHeight,
+            scaledWidth
+          );
+        } else {
+          ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight);
         }
+        ctx.restore();
       }
     }
 
@@ -96,18 +113,23 @@ function generateImage() {
     downloadLink.href = canvas.toDataURL("image/png");
   };
 
+  img.onerror = function () {
+    alert("Failed to load the image. Please try again with a different image.");
+  };
+
   img.src = url;
 }
 
 function resetForm() {
   document.getElementById("imageInput").value = "";
   document.getElementById("imagePreview").style.display = "none";
-  document.getElementById("copies").value = "4";
+  document.getElementById("rows").value = "3";
+  document.getElementById("columns").value = "3";
   document.getElementById("width").value = "12";
   document.getElementById("height").value = "18";
   document.getElementById("unit").value = "inches";
-  document.getElementById("gap").value = "0";
   document.getElementById("dpi").value = "300";
+  document.getElementById("orientation").value = "landscape";
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
