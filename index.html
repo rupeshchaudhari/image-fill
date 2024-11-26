@@ -4,21 +4,89 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Manipulation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            overflow-y: auto;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            margin: 20px;
+        }
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        input, button, canvas, a {
+            display: block;
+            margin-top: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        canvas {
+            border: 1px solid #d3d3d3;
+            margin-top: 20px;
+        }
+        a {
+            text-align: center;
+            text-decoration: none;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        a:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <h1>Image Manipulation</h1>
-    <input type="file" id="imageInput" accept="image/*"><br>
-    <label for="copies">Number of copies:</label>
-    <input type="number" id="copies" min="1" value="1"><br>
-    <label for="width">Width (inches):</label>
-    <input type="number" id="width" min="1" value="1"><br>
-    <label for="height">Height (inches):</label>
-    <input type="number" id="height" min="1" value="1"><br>
-    <label for="gap">Gap (pixels):</label>
-    <input type="number" id="gap" min="0" value="0"><br>
-    <button onclick="generateImage()">Generate Image</button><br>
-    <canvas id="canvas"></canvas><br>
-    <a id="downloadLink" download="output.png">Download Image</a>
+    <div class="container">
+        <h1>Image Manipulation</h1>
+        <input type="file" id="imageInput" accept="image/*">
+        <label for="copies">Number of copies:</label>
+        <input type="number" id="copies" min="1" value="1">
+        <label for="width">Width (inches):</label>
+        <input type="number" id="width" min="1" value="1">
+        <label for="height">Height (inches):</label>
+        <input type="number" id="height" min="1" value="1">
+        <label for="gap">Gap (pixels):</label>
+        <input type="number" id="gap" min="0" value="0">
+        <button onclick="generateImage()">Generate Image</button>
+        <canvas id="canvas"></canvas>
+        <a id="downloadLink" download="output.png">Download Image</a>
+    </div>
 
     <script src="script.js"></script>
 </body>

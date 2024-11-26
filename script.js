@@ -22,8 +22,6 @@ function generateImage() {
     canvas.height = canvasHeight;
 
     const aspectRatio = img.width / img.height;
-
-    // Calculate the maximum size for the images to fit within the canvas with the specified gap
     const cols = Math.ceil(Math.sqrt(copies));
     const rows = Math.ceil(copies / cols);
 
